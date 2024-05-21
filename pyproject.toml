@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "jenkins-build-parser"
+version = "0.1.0"
+description = ""
+authors = ["Julia Paluch <julia.paluch@strozfriedberg.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+beautifulsoup4 = "4.12.3"
+tqdm = "4.66.2"
+lxml = "^5.2.2"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
