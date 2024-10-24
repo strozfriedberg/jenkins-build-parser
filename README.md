@@ -42,4 +42,4 @@ poetry run python parse_jenkins_builds.py <path-to-input-dir>
 
 When finished, the script will write to a file called `jenkins_jobs.csv` in your current working directory.
 
-If you encounter any errors, reach out to Julia Paluch on Slack or over email at julia.paluch@strozfrideberg.com.
+If you encounter any errors, reach out to Julia Paluch on Slack or over email at julia.paluch@strozfriedberg.com.
