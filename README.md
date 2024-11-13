@@ -45,6 +45,14 @@ server to the `--default-index` option.
 uv run --default-index <url-to-local-package-server> parse_jenkins_builds.py <path-to-input-dir> 
 ```
 
+If you'd prefer not to use `uv`, you can use the included `requirements.txt` file to install the
+dependencies instead, and run the script normally.
+
+```
+pip install -r requirements.txt
+python parse_jenkins_builds.py <path-to-input-dir>
+```
+
 When finished, the script will write to a file called `jenkins_jobs.csv` in your current working
 directory.
 
@@ -52,5 +60,4 @@ If the script encounters any warnings or errors, they will be logged to a file n
 `jenkins_build_parser.log`. For example, if there is more than one userID found in a build file,
 a warning containing the file path of the config file will be logged.
 
-If you encounter any errors, reach out to Julia Paluch on Slack or over email at
-julia.paluch@strozfriedberg.com.
+If you encounter any errors, feel free to open an issue.
