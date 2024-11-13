@@ -1,3 +1,11 @@
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#     "beautifulsoup4",
+#     "lxml",
+#     "tqdm",
+# ]
+# ///
 import argparse
 import glob
 import os
