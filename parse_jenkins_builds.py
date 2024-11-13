@@ -39,6 +39,12 @@ fieldnames = [
     "config_description",
 ]
 
+plugin_fieldnames = [
+    "name",
+    "version",
+    "url",
+]
+
 
 def from_unix(unix_timestamp):
     try:
@@ -129,6 +135,17 @@ def parse_config(config_path):
     }
     return job_name, job_attrs
 
+def parse_plugin(plugin_path):
+    plugin_attrs = {}
+    try:
+        with open(plugin_path, "r") as f:
+            soup = BeautifulSoup(f, "xml")
+            for field in plugin_fieldnames:
+                plugin_attrs[field] = get_attribute_from_soup(field, soup, plugin_path)
+    except Exception as e:
+        logger.error(f"Could not parse plugin information from {plugin_path}: {e}")
+    return plugin_attrs
+
 
 def setup_argparse():
     parser = argparse.ArgumentParser(
@@ -146,10 +163,11 @@ def main():
     parser = setup_argparse()
     path = parser.path
     print("Getting all build.xml files...")
-    builds = glob.glob(path + "/**/build.xml", recursive=True)
+    builds = glob.glob(path + "/jobs/**/build.xml", recursive=True)
     print("Getting all config.xml files...")
-    configs = glob.glob(path + "/**/config.xml", recursive=True)
+    configs = glob.glob(path + "/jobs/**/config.xml", recursive=True)
     job_to_config = {}
+    plugins = glob.glob(path + "/plugins/**/pom.xml", recursive=True)
 
     print("Parsing configs...")
     for config_path in tqdm(configs):
@@ -166,6 +184,16 @@ def main():
             ):
                 writer.writerow(result)
                 jobs_csv.flush()
+
+    print("Parsing and writing plugins...")
+    with open("jenkins_plugins.csv", "w") as plugins_csv:
+        writer = csv.DictWriter(plugins_csv, fieldnames=plugin_fieldnames)
+        writer.writeheader()
+        with Pool() as pool:
+            for result in pool.map(parse_plugin, tqdm(plugins, total=len(plugins))):
+                writer.writerow(result)
+                plugins_csv.flush()
+
 
 
 if __name__ == "__main__":

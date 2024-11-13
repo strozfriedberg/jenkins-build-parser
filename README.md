@@ -1,9 +1,10 @@
 # Jenkins config/build parser
 
-This script parses Jenkins `build.xml` and `config.xml` files and outputs their attributes to a CSV.
+This script parses Jenkins build configuration files and plugin configuration files and outputs
+their attributes to two CSV files.
 
-The following attributes are supported:
-
+The script extracts the following attributes for Jenkins jobs and places them in a CSV titled
+`jenkins_jobs.csv`:
 
 | Field | Description |
 | ----- | ----------- |
@@ -14,25 +15,33 @@ The following attributes are supported:
 | username | User associated with the build |
 | build_number | Build number |
 | result | Result status of the build |
-| job_name | Name of the job with the build |
+| job_name | Name of the job associated with the build |
 | config_description | Description of the job associated with the build |
 
 Each Jenkins job on the server should have a corresponding `config.xml` file that contains
 configuration data for the job. Each Jenkins build is associated with a job and will have a
 corresponding `build.xml` that is generated when it completes.
 
-When you extract the `build.xml` and `config.xml` files from a Jenkins server, make sure that you
-preserve the original file timestamps and original directory structure.
+Note that this script uses file modified times to populate `config_modified_time` and
+`build_modified_time` in the `jenkins_jobs` CSV. Make sure that you preserve original file
+timestamps if you're not mounting an image or running this script on a live system.
+
+The script extracts the following attributes for Jenkins plugins and places them in a CSV titled
+`jenkins_plugins.csv`:
+
+| Field | Description |
+| ----- | ----------- |
+| name | Friendly name of the plugin |
+| version | Version of the plugin |
+| url | URL associated with the plugin |
 
 ## Usage
 
 Python 3.11 is required to run this script.
 
-To run this script, you must provide the path that contains all of your `build.xml` and `config.xml`
-files. These files will be extracted recursively. The script assumes that you have preserved the
-original directory structure from the Jenkins server (i.e., that each `config.xml` and `build.xml`
-has a unique parent directory), and that you have preserved the original modified times of the files
-and folders therein.
+To run this script, you must provide the path to the $JENKINS_HOME directory. The script will look
+for `build.xml` and `config.xml` files in `$JENKINS_HOME/jobs` to populate `jenkins_jobs.csv`, and
+will look for `pom.xml` files in `$JENKINS_HOME/plugins` to populate `jenkins_plugins.csv`.
 
 Use `uv` to install the dependencies for this script and run it in a virtualenv.
 ```
@@ -52,9 +61,6 @@ dependencies instead, and run the script normally.
 pip install -r requirements.txt
 python parse_jenkins_builds.py <path-to-input-dir>
 ```
-
-When finished, the script will write to a file called `jenkins_jobs.csv` in your current working
-directory.
 
 If the script encounters any warnings or errors, they will be logged to a file named
 `jenkins_build_parser.log`. For example, if there is more than one userID found in a build file,
